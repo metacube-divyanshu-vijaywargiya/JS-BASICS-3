@@ -1,3 +1,4 @@
+//Base class for both colorful balls and evil circle
 class Shape {
     constructor(x, y, velX, velY) {
         this.x = x;
@@ -8,15 +9,17 @@ class Shape {
     }
 }
 
+//Colorfull balls extending shape class
 class Ball extends Shape {
     constructor(x, y, velX, velY, color, size) {
-        super(x, y, velX, velY);
+        super(x, y, velX, velY); //calling constructor of Shape class
         this.color = color;
         this.size = size;
     }
 
+    //Method for creating colorfull balls on the canvas
     draw(context) {
-        if (this.exists) {
+        if(this.exists){
             context.beginPath();
             context.fillStyle = this.color;
             context.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
@@ -24,6 +27,7 @@ class Ball extends Shape {
         }
     }
 
+    //Method for updating velocity of balls
     update() {
         if ((this.x + this.size) >= canvas.width) {
             this.velX = -(this.velX);
@@ -45,6 +49,7 @@ class Ball extends Shape {
         this.y += this.velY;
     }
 
+    //Method to detect collision of colorful ball with evil circle
     collisionDetect(evilCircle) {
         const dx = this.x - evilCircle.x;
         const dy = this.y - evilCircle.y;
@@ -57,45 +62,31 @@ class Ball extends Shape {
     }
 }
 
+
+//Extending shape class to make Evil circle class
 class EvilCircle extends Shape {
     constructor(x, y, velX, velY, size) {
-        super(x, y, velX, velY);
+        super(x, y, velX, velY);  //calling constructor of Shape class
         this.size = size;
-        this.changePosition(); // Set initial position
+        this.changePosition(); // Set initial position of evil circle on canvas
     }
 
+    // Randomly change the position of the EvilCircle
     changePosition() {
-        // Randomly change the position of the EvilCircle
         this.x = Math.random() * (canvas.width - this.size * 2);
         this.y = Math.random() * (canvas.height - this.size * 2);
     }
 
+    //Method to draw evil circle on canvas and styling it
     draw(context) {
-        if (this.exists) {
-            // Draw the black fill
             context.beginPath();
-            context.fillStyle = 'black'; // Fill color
-            context.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+            context.fillStyle = 'black'; 
+            context.arc(this.x, this.y, this.size, 0, 2 * Math.PI); //context.arc(x, y, radius, startAngle, endAngle);
             context.fill();
 
-            // Draw the white border
-            context.lineWidth = 4; // Set the border width
-            context.strokeStyle = 'white'; // Border color
+            context.lineWidth = 4;
+            context.strokeStyle = 'white';
             context.stroke();
-        }
-    }
-
-    update() {
-        if ((this.x + this.size) >= canvas.width || (this.x - this.size) <= 0) {
-            this.velX = -(this.velX);
-        }
-
-        if ((this.y + this.size) >= canvas.height || (this.y - this.size) <= 0) {
-            this.velY = -(this.velY);
-        }
-
-        this.x += this.velX;
-        this.y += this.velY;
     }
 
     eatBall() {
@@ -104,13 +95,14 @@ class EvilCircle extends Shape {
     }
 }
 
+//defining canvas and its size
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 canvas.width = 1250;
 canvas.height = 550;
 
-let balls = [];
-let ballsCount = 0;
+let balls = []; //to store all the balls which are on canvas
+let ballsCount = 0; //to store number of balls left
 const scoreDisplay = document.getElementById('score');
 
 const colors = ['blue', 'green', 'yellow', 'purple', 'orange', 'pink'];
@@ -118,7 +110,7 @@ const colors = ['blue', 'green', 'yellow', 'purple', 'orange', 'pink'];
 
 // Create balls
 for (let i = 0; i < 25; i++) {
-    const size = Math.random() * 20 + 10;
+    const size = Math.random() * 20 + 8;
     const color = colors[Math.floor(Math.random() * colors.length)];
     const ball = new Ball(
         Math.random() * (canvas.width - size * 1.5) + size,
@@ -132,8 +124,8 @@ for (let i = 0; i < 25; i++) {
     ballsCount++;
 }
 
-// Create an EvilCircle instance
-const evilCircle = new EvilCircle(400, 300, 0, 0, 15);
+// Create an EvilCircle with size 15 and everything 0 initially
+const evilCircle = new EvilCircle(0, 0, 0, 0, 15);
 
 // Update the score display
 scoreDisplay.textContent = `Balls left: ${ballsCount}`;
@@ -142,7 +134,7 @@ scoreDisplay.textContent = `Balls left: ${ballsCount}`;
 function loop() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw and update balls
+    // Draw and update balls which are on canvas 
     for (let ball of balls) {
         if (ball.exists) {
             ball.draw(context);
@@ -151,9 +143,8 @@ function loop() {
         }
     }
 
-    // Draw and update the evil circle
+    // Draw the evil circle
     evilCircle.draw(context);
-    evilCircle.update();
 
     // Request the next animation frame
     requestAnimationFrame(loop);
